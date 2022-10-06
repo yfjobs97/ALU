@@ -1,0 +1,240 @@
+{engnx10:~/cad/primetime} pt_shell -f primetime.script
+
+                                 PrimeTime (R)
+
+              Version M-2016.12-SP3-1 for linux64 - Jul 18, 2017 
+
+                    Copyright (c) 1988 - 2017 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+#### To be used for VLSI design course work only
+#### Xiangyu Xu
+###############################################################
+# Define search path verilog file and library and variables
+###############################################################
+set search_path "* ~/cad/primetime"
+* ~/cad/primetime
+source variables1
+R
+R
+###############################################################
+# link library
+###############################################################
+set link_library $library_file
+project6.db
+set target_library $library_file
+project6.db
+#set link_library [list $library_file ]
+#set target_library [list $library_file ]
+###############################################################
+# link design
+###############################################################
+remove_design -all
+Error: Nothing matched for designs: there are none loaded (SEL-005)
+0
+read_verilog $verilog_file
+1
+###############################################################
+# Define IO parameters
+###############################################################
+set_driving_cell -lib_cell $driving_cell -input_transition_rise $input_transition -input_transition_fall $input_transition [all_inputs]
+Loading verilog file '/home/011/z/zc/zck190000/cad/primetime/alu_innovus.v'
+Loading db file '/home/011/z/zc/zck190000/cad/primetime/project6.db'
+Linking design alu...
+Information: 2 (22.22%) library cells are unused in library project6..... (LNK-045)
+Information: total 2 library cells are unused (LNK-046)
+1
+set_load $load [all_outputs]
+1
+###############################################################
+###############################################################
+#define the clock - for comb circuit we may not need to use any clock
+###############################################################
+create_clock -name clk -period $clock_period [get_ports $clock_pin_name]
+1
+set_clock_transition -rise -max $input_transition [get_clocks clk]
+1
+set_clock_transition -fall -max $input_transition [get_clocks clk]
+1
+###############################################################
+# set condition
+###############################################################
+set timing_slew_propagation_mode worst_slew
+worst_slew
+set timing_report_unconstrained_paths true
+true
+set power_enable_analysis true
+true
+set_disable_timing [get_ports $reset_pin_name]
+Warning: No port objects matched 'R' (SEL-004)
+Error: Nothing matched for ports (SEL-005)
+Error: Nothing matched for object_list (SEL-005)
+0
+###############################################################
+# analyze delay and power
+###############################################################
+check_timing
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Information: Checking 'no_input_delay'.
+Information: Checking 'no_driving_cell'.
+Information: Checking 'unconstrained_endpoints'.
+Warning: There are 32 endpoints which are not constrained for maximum delay.
+
+Information: Checking 'unexpandable_clocks'.
+Information: Checking 'latch_fanout'.
+Information: Checking 'no_clock'.
+Information: Checking 'partial_input_delay'.
+Information: Checking 'generic'.
+Information: Checking 'loops'.
+Information: Checking 'generated_clocks'.
+Information: Checking 'pulse_clock_non_pulse_clock_merge'.
+Information: Checking 'pll_configuration'.
+0
+update_timing
+1
+report_timing -transition_time -delay min_max -capacitance -input_pins
+****************************************
+Report : timing
+	-path_type full
+	-delay_type min_max
+	-input_pins
+	-max_paths 1
+	-transition_time
+	-capacitance
+	-sort_by slack
+Design : alu
+Version: M-2016.12-SP3-1
+Date   : Wed Dec 11 22:09:55 2019
+****************************************
+
+
+  Startpoint: result_reg[0]
+               (falling edge-triggered flip-flop clocked by clk')
+  Endpoint: result_reg[0]
+               (falling edge-triggered flip-flop clocked by clk')
+  Path Group: clk
+  Path Type: min
+
+  Point                                 Cap      Trans       Incr       Path
+  -----------------------------------------------------------------------------
+  clock clk' (fall edge)                          0.00       0.00       0.00
+  clock network delay (ideal)                                0.00       0.00
+  result_reg[0]/CLK (dffP6)                       0.00       0.00       0.00 f
+  result_reg[0]/Q (dffP6)              2.00       6.85       4.78       4.78 r
+  U355/C (AOI22P6)                                6.85       0.00       4.78 r
+  U355/OUT (AOI22P6)                   0.00       0.03       0.01       4.79 f
+  U346/A (nand2P6)                                0.03       0.00       4.79 f
+  U346/OUT (nand2P6)                   0.00       0.02       0.02       4.81 r
+  result_reg[0]/D (dffP6)                         0.02       0.00       4.81 r
+  data arrival time                                                     4.81
+
+  clock clk' (fall edge)                         20.00       0.00       0.00
+  clock network delay (ideal)                                0.00       0.00
+  clock reconvergence pessimism                              0.00       0.00
+  result_reg[0]/CLK (dffP6)                                             0.00 f
+  library hold time                                          1.26       1.26
+  data required time                                                    1.26
+  -----------------------------------------------------------------------------
+  data required time                                                    1.26
+  data arrival time                                                    -4.81
+  -----------------------------------------------------------------------------
+  slack (MET)                                                           3.55
+
+
+
+  Startpoint: result_reg[0]
+               (falling edge-triggered flip-flop clocked by clk')
+  Endpoint: result_reg[0]
+               (falling edge-triggered flip-flop clocked by clk')
+  Path Group: clk
+  Path Type: max
+
+  Point                                 Cap      Trans       Incr       Path
+  -----------------------------------------------------------------------------
+  clock clk' (fall edge)                         20.00       0.00       0.00
+  clock network delay (ideal)                                0.00       0.00
+  result_reg[0]/CLK (dffP6)                      20.00       0.00       0.00 f
+  result_reg[0]/Q (dffP6)              2.00       5.42       6.30       6.30 r
+  U355/C (AOI22P6)                                5.42       0.00       6.30 r
+  U355/OUT (AOI22P6)                   0.00       0.75       0.05       6.35 f
+  U346/A (nand2P6)                                0.75       0.00       6.35 f
+  U346/OUT (nand2P6)                   0.00       0.15       0.14       6.49 r
+  result_reg[0]/D (dffP6)                         0.15       0.00       6.49 r
+  data arrival time                                                     6.49
+
+  clock clk' (fall edge)                          0.00      20.00      20.00
+  clock network delay (ideal)                                0.00      20.00
+  clock reconvergence pessimism                              0.00      20.00
+  result_reg[0]/CLK (dffP6)                                            20.00 f
+  library setup time                                        -0.07      19.93
+  data required time                                                   19.93
+  -----------------------------------------------------------------------------
+  data required time                                                   19.93
+  data arrival time                                                    -6.49
+  -----------------------------------------------------------------------------
+  slack (MET)                                                          13.45
+
+
+1
+update_power
+Information: Checked out license 'PrimeTime-PX' (PT-019)
+Warning: Neither event file or switching activity data present for power estimation. The command will propagate switching activity values for power calculation.  (PWR-246)
+Information: Running switching activity propagation with 4 threads!
+Information: Running averaged power analysis... (PWR-601)
+Information: Running power calculation with 4 threads. (PWR-602)
+1
+report_power 
+****************************************
+Report : Averaged Power
+Design : alu
+Version: M-2016.12-SP3-1
+Date   : Wed Dec 11 22:09:57 2019
+****************************************
+
+
+
+  Attributes
+  ----------
+      i  -  Including register clock pin internal power
+      u  -  User defined power group
+
+                        Internal  Switching  Leakage    Total
+Power Group             Power     Power      Power      Power   (     %)  Attrs
+--------------------------------------------------------------------------------
+clock_network           3.323e-07 4.979e-06 4.871e-11 5.311e-06 ( 0.98%)  i
+register                8.079e-06 1.553e-04 1.143e-07 1.635e-04 (30.10%)  
+combinational           1.930e-04 1.809e-04 2.976e-07 3.743e-04 (68.92%)  
+sequential                 0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+memory                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+io_pad                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+black_box                  0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+
+  Net Switching Power  = 3.412e-04   (62.83%)
+  Cell Internal Power  = 2.015e-04   (37.10%)
+  Cell Leakage Power   = 4.119e-07   ( 0.08%)
+                         ---------
+Total Power            = 5.430e-04  (100.00%)
+
+1
+exit
+Information: Defining new variable 'driving_cell'. (CMD-041)
+Information: Defining new variable 'library_file'. (CMD-041)
+Information: Defining new variable 'verilog_file'. (CMD-041)
+Information: Defining new variable 'input_transition'. (CMD-041)
+Information: Defining new variable 'timing_slew_propagation_mode'. (CMD-041)
+Information: Defining new variable 'clock_period'. (CMD-041)
+Information: Defining new variable 'load'. (CMD-041)
+Information: Defining new variable 'reset_pin_name'. (CMD-041)
+Information: Defining new variable 'clock_pin_name'. (CMD-041)
+
+Timing updates: 1 (1 implicit, 0 explicit) (0 incremental, 1 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 737.57 MB
+CPU usage for this session: 8 seconds 
+Elapsed time for this session: 5 seconds
+Diagnostics summary: 3 errors, 3 warnings, 14 informationals
+
+Thank you for using pt_shell!
